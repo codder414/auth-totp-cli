@@ -8,48 +8,13 @@ import {Config} from './utils/config'
 import {getTimeToExpire} from './utils/get-time-to-expire'
 import cliProgress from 'cli-progress'
 import {PasswordCipher, EncryptedData, KeyCipher} from './utils/data-encryptor'
+import {askPassword} from './utils/ask-password'
+import {colorizeValue} from './utils/colorize-value'
+import {disableEncryption} from './utils/disable-encryption'
 
 const passwordCypher = new PasswordCipher()
 const keyCypher = new KeyCipher()
 
-function colorizeValue(value: number, templateStr: string): string {
-  if (value <= 30 && value >= 20) {
-    return chalk.green(`${value} ${templateStr}`)
-  // eslint-disable-next-line max-statements-per-line
-  } if (value < 20 && value >= 10) {
-    return chalk.yellow(`${value} ${templateStr}`)
-  // eslint-disable-next-line max-statements-per-line
-  } if (value < 10 && value > 5) {
-    return chalk.keyword('orange')(`${value} ${templateStr}`)
-  }
-  return chalk.red(`${value} ${templateStr}`)
-}
-
-async function askPassword(title: string): Promise<string> {
-  return (await cli.prompt(title, {type: 'hide', required: true}))?.trim()
-}
-
-async function disableEncryption(config: Config): Promise<boolean> {
-  const loadedKey = config.get('key') as EncryptedData
-  if (!loadedKey.key && config.get('encrypted')) {
-    const password = await askPassword('Password')
-    const decryptedKey = passwordCypher.decrypt(loadedKey, password)
-    config.set('key', decryptedKey)
-    config.set('encrypted', false)
-    config.set('type', undefined)
-    config.save()
-    return true
-  }
-  if (loadedKey.key && config.get('encrypted')) {
-    const decryptedKey = keyCypher.decrypt(loadedKey)
-    config.set('key', decryptedKey)
-    config.set('encrypted', false)
-    config.set('type', undefined)
-    config.save()
-    return true
-  }
-  return false
-}
 class AuthTotp extends Command {
   static description = 'Generate TOTP for 2FA auth'
 
@@ -108,7 +73,7 @@ class AuthTotp extends Command {
     }
 
     if (decryptKey) {
-      await disableEncryption(config)
+      await disableEncryption(config, passwordCypher, keyCypher)
       this.log('key successfully decrypted')
       return
     }
@@ -123,7 +88,7 @@ class AuthTotp extends Command {
         if (!shouldRewrite) {
           return
         }
-        await disableEncryption(config)
+        await disableEncryption(config, passwordCypher, keyCypher)
       }
 
       loadedKey = config.get('key') as string
@@ -145,7 +110,7 @@ class AuthTotp extends Command {
         if (!shouldRewrite) {
           return
         }
-        await disableEncryption(config)
+        await disableEncryption(config, passwordCypher, keyCypher)
       }
       loadedKey = config.get('key') as string
       let done = false
