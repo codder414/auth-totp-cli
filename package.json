@@ -39,12 +39,12 @@
   "keywords": [
     "oclif"
   ],
-  "license": "MIT",
+  "license": "GNU General Public License v3.0",
   "main": "lib/index.js",
   "oclif": {
     "bin": "auth-totp"
   },
-  "repository": "CyraxRobot/auth-totp",
+  "repository": "codder414/auth-totp",
   "scripts": {
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm -rf lib && tsc -b && oclif-dev readme",
