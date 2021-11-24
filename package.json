@@ -35,7 +35,7 @@
     "/bin",
     "/lib"
   ],
-  "homepage": "https://github.com/CyraxRobot/auth-totp",
+  "homepage": "https://github.com/codder414/auth-totp",
   "keywords": [
     "oclif"
   ],
