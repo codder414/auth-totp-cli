@@ -30,6 +30,16 @@ class AuthTotp extends Command {
     next: flags.boolean({char: 'n', description: 'awaits and takes next totp', default: false}),
   }
 
+  static examples = [
+    '$ auth-totp --help',
+    '$ auth-totp --key <base 32 key>  #HINT: can be retrieved from QR code',
+    '$ auth-totp --encryptKey #encryptes key',
+    '$ auth-totp --withPassword #encryptes key and secures it with password',
+    '$ auth-totp --interactive #interactive token generation with progress bar for token expiration',
+    '$ auth-totp --verbose #prints number of seconds when token will be  expired',
+    '$ auth-totp --next #await next totp',
+  ]
+
   static args = []
 
   async run() {
